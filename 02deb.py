@@ -2,11 +2,12 @@
 
 import os, sys, tempfile, shutil, subprocess, textwrap
 
-from zeroinstall.injector.iface_cache import iface_cache
+from zeroinstall.injector.config import load_config
 from zeroinstall.injector import gpg
 
+config = load_config()
 uri, = sys.argv[1:]
-iface = iface_cache.get_interface(uri)
+iface = config.iface_cache.get_interface(uri)
 deb_name = iface.get_name().lower().replace(' ', '-')
 
 print iface.get_name()
@@ -16,18 +17,16 @@ desktop = """[Desktop Entry]
 # See the Zero Install project for details: http://0install.net
 Type=Application
 Version=1.0
-Name=%(name)s
-Comment=%(comment)s
-Exec=%(0launch)s -- %(iface)s %%f
+Name={name}
+Comment={comment}
+Exec={launch} -- {iface} %f
 Categories=Application
-""" % {
-	'name' : iface.get_name(),
-	'comment' : iface.summary,
-	'0launch' : '/usr/bin/0launch',
-	'iface' : uri,
-}
+""".format(name = iface.get_name(),
+	   comment = iface.summary,
+	   launch = '/usr/bin/0launch',
+	   iface = uri)
 
-sig, = iface_cache.get_cached_signatures(uri)[:1]
+sig, = config.iface_cache.get_cached_signatures(uri)[:1]
 key = gpg.load_key(sig.fingerprint)
 
 desc_paras = ('Description: ' + iface.description).split('\n\n')
@@ -37,25 +36,22 @@ for para in wrapped:
 	desc_lines += [' ' + (line or '.') for line in para]
 description = '\n'.join(desc_lines)[1:]
 
-control = """
-Package: %(deb_name)s-launcher
+control = """Package: {deb_name}-launcher
 Version: 1-1
 Section: misc
 Priority: optional
 Architecture: all
 Depends: zeroinstall-injector (>= 0.30)
 Installed-Size: 1
-Maintainer: %(author)s
-%(description)s
+Maintainer: {author}
+{description}
  .
  Note: This is a launcher package; the actual program will be run using
  Zero Install.
  .
-""" % {
-	'deb_name' : deb_name,
-	'author' : key.name,
-	'description' : description,
-}
+""".format(deb_name = deb_name,
+	   author = key.name,
+	   description = description)
 
 d = tempfile.mkdtemp(prefix = '02deb-')
 try:
@@ -74,6 +70,6 @@ try:
 	s.write(control)
 	s.close()
 
-	subprocess.check_call(['fakeroot', 'dpkg-deb', '--build', '--', d, '%s.deb' % deb_name])
+	subprocess.check_call(['fakeroot', 'dpkg-deb', '--build', '--', d, deb_name + '.deb'])
 finally:
 	shutil.rmtree(d)
