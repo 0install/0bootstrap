@@ -27,7 +27,7 @@ Zero Install.
 %setup -c
 
 %install
-mkdir $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT
 cp -pR * $RPM_BUILD_ROOT
 
 %files
