@@ -79,7 +79,8 @@ def makerpm(config, iface, icon):
 		t.add(d + '/usr', 'usr', recursive=True)
 		t.close()
 
-		subprocess.check_call(['rpmbuild', '-ba', d + '/' + rpm_name + '.spec'])
+		subprocess.check_call(['rpmbuild', '--define', '%_topdir ' + top_dir,
+		                       '-ba', d + '/' + rpm_name + '.spec'])
 
 		rpms_dir = top_dir + '/RPMS/noarch'
 		rpm, = os.listdir(rpms_dir)
