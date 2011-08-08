@@ -1,0 +1,37 @@
+#!/usr/bin/env python
+
+import os, sys, tempfile, shutil, subprocess, textwrap
+
+from zeroinstall.injector.config import load_config
+from zeroinstall.injector import gpg
+
+from optparse import OptionParser
+parser = OptionParser(usage = "usage: %prog URI")
+parser.add_option( "--browser",
+                  metavar="BROWSER", help="choose output format based on user-agent string")
+(options, args) = parser.parse_args()
+
+if len(args) == 1:
+	uri, = args
+else:
+	parser.print_help()
+	sys.exit(1)
+
+config = load_config()
+iface = config.iface_cache.get_interface(uri)
+
+print iface.get_name()
+
+sig, = config.iface_cache.get_cached_signatures(uri)[:1]
+key = gpg.load_key(sig.fingerprint)
+
+if not options.browser:
+	print >>sys.stderr, "Use --browser to specify the desired output format."
+	sys.exit(1)
+
+if options.browser.startswith('Ubuntu'):
+	import deb
+	deb.makedeb(config, iface)
+else:
+	import rpm
+	rpm.makerpm(config, iface)

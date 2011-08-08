@@ -1,0 +1,35 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type='text/xsl' href='interface.xsl'?>
+<interface xmlns="http://zero-install.sourceforge.net/2004/injector/interface">
+  <name>0bootstrap</name>
+  <summary>create a native package that installs 0install and a program</summary>
+  <description>
+    0bootstrap creates native binary packages (debs, RPMs, exes, etc) for use on systems
+    where 0install is not already present.
+
+    Unlike 0export, the packages do not contain the programs themselves. They are just
+    launchers that trigger 0install to get the actual program.
+  </description>
+
+  <homepage>http://0install.net/0bootstrap.html</homepage>
+
+  <feed-for interface="http://0install.net/tools/0bootstrap.xml"/>
+
+  <group>
+    <command name="run" path="0bootstrap">
+      <runner interface="http://repo.roscidus.com/python/python">
+	<version before="3"/>
+      </runner>
+    </command>
+    <command name="test" path="tests/testbootstrap.py">
+      <runner interface="http://repo.roscidus.com/python/python">
+	<version before="3"/>
+      </runner>
+    </command>
+    <requires interface="http://0install.net/2007/interfaces/ZeroInstall.xml">
+      <version not-before="1.0"/>
+      <environment insert="" name="PYTHONPATH"/>
+    </requires>
+    <implementation id="." version="0.1-pre"/>
+  </group>
+</interface>
