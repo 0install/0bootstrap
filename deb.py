@@ -20,7 +20,7 @@ Maintainer: {author}
  .
 """
 
-def makedeb(config, iface):
+def makedeb(config, iface, icon):
 	pkg_name = iface.get_name().lower().replace(' ', '-')
 
 	desc_paras = ('Description: ' + iface.description).split('\n\n')
@@ -41,13 +41,20 @@ def makedeb(config, iface):
 	try:
 		bin_dir = d + '/usr/bin'
 		apps_dir = d + '/usr/share/applications'
+		icons_dir = d + '/usr/share/pixmaps'
 		deb_dir = d + '/DEBIAN'
 		os.makedirs(bin_dir)
 		os.makedirs(apps_dir)
+		os.makedirs(icons_dir)
 		os.makedirs(deb_dir)
 
+		icon_name = None
+		if icon:
+			icon_name = pkg_name + '.png'
+			shutil.copyfile(icon, icons_dir + '/' + icon_name)
+
 		s = open(apps_dir + '/' + pkg_name + '.desktop', 'w')
-		s.write(support.make_desktop_file(iface))
+		s.write(support.make_desktop_file(iface, icon_name))
 		s.close()
 
 		s = open(deb_dir + '/control', 'w')

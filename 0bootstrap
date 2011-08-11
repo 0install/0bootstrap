@@ -19,6 +19,7 @@ else:
 
 config = load_config()
 iface = config.iface_cache.get_interface(uri)
+icon = config.iface_cache.get_icon_path(iface)
 
 print iface.get_name()
 
@@ -31,7 +32,7 @@ if not options.browser:
 
 if options.browser.startswith('Ubuntu'):
 	import deb
-	deb.makedeb(config, iface)
+	deb.makedeb(config, iface, icon)
 else:
 	import rpm
-	rpm.makerpm(config, iface)
+	rpm.makerpm(config, iface, icon)
