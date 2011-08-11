@@ -84,6 +84,6 @@ def makerpm(config, iface, icon):
 
 		rpms_dir = top_dir + '/RPMS/noarch'
 		rpm, = os.listdir(rpms_dir)
-		shutil.copyfile(rpms_dir + '/' + rpm, './' + rpm)
+		shutil.copyfile(rpms_dir + '/' + rpm, './' + rpm_name + '.rpm')
 	finally:
 		shutil.rmtree(d)
