@@ -29,11 +29,11 @@ class TestBootstrap(unittest.TestCase):
 		ro_rmtree(self.tmpdir)
 	
 	def testDeb(self):
-		run([bootstrap, "--browser=Ubuntu/10.04", "http://rox.sourceforge.net/2005/interfaces/ROX-Filer"],
+		run([bootstrap, "--format=deb", "http://rox.sourceforge.net/2005/interfaces/ROX-Filer"],
 				expect = "dpkg-deb: building package `rox-filer-launcher' in `rox-filer.deb'")
 
 	def testRPM(self):
-		run([bootstrap, "--browser=Red Hat", "http://rox.sourceforge.net/2005/interfaces/ROX-Filer"],
+		run([bootstrap, "--format=rpm", "http://rox.sourceforge.net/2005/interfaces/ROX-Filer"],
 				expect = "Processing files: rox-filer-launcher-1-1.noarch")
 
 suite = unittest.makeSuite(TestBootstrap)

@@ -7,8 +7,8 @@ from zeroinstall.injector import gpg, model
 
 from optparse import OptionParser
 parser = OptionParser(usage = "usage: %prog URI")
-parser.add_option( "--browser",
-                  metavar="BROWSER", help="choose output format based on user-agent string")
+parser.add_option( "--format",
+                  metavar="FORMAT", help="set output format (rpm|deb)")
 (options, args) = parser.parse_args()
 
 if len(args) == 1:
@@ -28,13 +28,16 @@ print iface.get_name()
 sig, = config.iface_cache.get_cached_signatures(uri)[:1]
 key = gpg.load_key(sig.fingerprint)
 
-if not options.browser:
-	print >>sys.stderr, "Use --browser to specify the desired output format."
+if not options.format:
+	print >>sys.stderr, "Use --format to specify the desired output format."
 	sys.exit(1)
 
-if options.browser.startswith('Ubuntu'):
+if options.format == 'deb':
 	import deb
 	deb.makedeb(config, iface, icon)
-else:
+elif options.format == 'rpm':
 	import rpm
 	rpm.makerpm(config, iface, icon)
+else:
+	print >>sys.stderr, "Unknown format '{format}'".format(format = options.format)
+	sys.exit(1)
