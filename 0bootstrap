@@ -3,7 +3,7 @@
 import os, sys, tempfile, shutil, subprocess, textwrap
 
 from zeroinstall.injector.config import load_config
-from zeroinstall.injector import gpg
+from zeroinstall.injector import gpg, model
 
 from optparse import OptionParser
 parser = OptionParser(usage = "usage: %prog URI")
@@ -16,6 +16,8 @@ if len(args) == 1:
 else:
 	parser.print_help()
 	sys.exit(1)
+
+uri = model.canonical_iface_uri(uri)
 
 config = load_config()
 iface = config.iface_cache.get_interface(uri)
