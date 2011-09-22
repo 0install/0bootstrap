@@ -37,7 +37,7 @@ cp -pR * $RPM_BUILD_ROOT
 """
 
 def makerpm(config, iface, icon):
-	rpm_name = iface.get_name().lower().replace(' ', '-')
+	pkg_name = iface.get_name().lower().replace(' ', '-')
 
 	sig, = config.iface_cache.get_cached_signatures(iface.uri)[:1]
 	key = gpg.load_key(sig.fingerprint)
@@ -58,32 +58,31 @@ def makerpm(config, iface, icon):
 
 		icon_name = None
 		if icon:
-			icon_name = rpm_name + '.png'
+			icon_name = pkg_name + '.png'
 			shutil.copyfile(icon, icons_dir + '/' + icon_name)
 
-		s = open(apps_dir + '/' + rpm_name + '.desktop', 'w')
+		s = open(apps_dir + '/' + pkg_name + '.desktop', 'w')
 		s.write(support.make_desktop_file(iface, icon_name))
 		s.close()
 
-		spec = _spec_template.format(rpm_name = rpm_name,
+		spec = _spec_template.format(pkg_name = pkg_name,
 			   author = key.name,
 			   summary = iface.summary,
-			   description = iface.description,
-			   TOPDIR = top_dir)
+			   description = iface.description)
 
-		s = open(d + '/' + rpm_name + '.spec', 'w')
+		s = open(d + '/' + pkg_name + '.spec', 'w')
 		s.write(spec)
 		s.close()
 
-		t = tarfile.open(rpm_sources + '/' + rpm_name + '.tar.gz', 'w:gz')
+		t = tarfile.open(rpm_sources + '/' + pkg_name + '.tar.gz', 'w:gz')
 		t.add(d + '/usr', 'usr', recursive=True)
 		t.close()
 
 		subprocess.check_call(['rpmbuild', '--define', '%_topdir ' + top_dir,
-		                       '-bb', d + '/' + rpm_name + '.spec'])
+		                       '-bb', d + '/' + pkg_name + '.spec'])
 
 		rpms_dir = top_dir + '/RPMS/noarch'
 		rpm, = os.listdir(rpms_dir)
-		shutil.copyfile(rpms_dir + '/' + rpm, './' + rpm_name + '.rpm')
+		shutil.copyfile(rpms_dir + '/' + rpm, pkg_name + '.rpm')
 	finally:
 		shutil.rmtree(d)
