@@ -33,10 +33,6 @@ def makedeb(config, iface, icon):
 	sig, = config.iface_cache.get_cached_signatures(iface.uri)[:1]
 	key = gpg.load_key(sig.fingerprint)
 
-	control = _control_template.format(deb_name = pkg_name,
-		   author = key.name,
-		   description = description)
-
 	d = tempfile.mkdtemp(prefix = 'bootstrap-')
 	try:
 		bin_dir = d + '/usr/bin'
@@ -56,6 +52,10 @@ def makedeb(config, iface, icon):
 		s = open(apps_dir + '/' + pkg_name + '.desktop', 'w')
 		s.write(support.make_desktop_file(iface, icon_name))
 		s.close()
+
+		control = _control_template.format(deb_name = pkg_name,
+			   author = key.name,
+			   description = description)
 
 		s = open(deb_dir + '/control', 'w')
 		s.write(control)
