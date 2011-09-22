@@ -11,7 +11,7 @@ Section: misc
 Priority: optional
 Architecture: all
 Depends: zeroinstall-injector (>= 0.30)
-Installed-Size: {size}
+Installed-Size: {installed_size}
 Maintainer: {author}
 {description}
  .
@@ -59,7 +59,7 @@ def makedeb(config, iface, icon):
 		control = _control_template.format(deb_name = pkg_name,
 			   author = key.name,
 			   description = description,
-			   size = (bytes + 1023) / 1024)
+			   installed_size = (bytes + 1023) / 1024)
 
 		s = open(deb_dir + '/control', 'w')
 		s.write(control)
