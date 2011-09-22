@@ -11,7 +11,7 @@ Section: misc
 Priority: optional
 Architecture: all
 Depends: zeroinstall-injector (>= 0.30)
-Installed-Size: 1
+Installed-Size: {size}
 Maintainer: {author}
 {description}
  .
@@ -32,6 +32,7 @@ def makedeb(config, iface, icon):
 
 	sig, = config.iface_cache.get_cached_signatures(iface.uri)[:1]
 	key = gpg.load_key(sig.fingerprint)
+	bytes = 0
 
 	d = tempfile.mkdtemp(prefix = 'bootstrap-')
 	try:
@@ -48,14 +49,17 @@ def makedeb(config, iface, icon):
 		if icon:
 			icon_name = pkg_name + '.png'
 			shutil.copyfile(icon, icons_dir + '/' + icon_name)
+			bytes += os.path.getsize(icon)
 
 		s = open(apps_dir + '/' + pkg_name + '.desktop', 'w')
 		s.write(support.make_desktop_file(iface, icon_name))
+		bytes += s.tell()
 		s.close()
 
 		control = _control_template.format(deb_name = pkg_name,
 			   author = key.name,
-			   description = description)
+			   description = description,
+			   size = (bytes + 1023) / 1024)
 
 		s = open(deb_dir + '/control', 'w')
 		s.write(control)
