@@ -65,7 +65,7 @@ def makerpm(config, iface, icon):
 		s.write(support.make_desktop_file(iface, icon_name))
 		s.close()
 
-		spec = _spec_template.format(pkg_name = pkg_name,
+		spec = _spec_template.format(rpm_name = pkg_name,
 			   author = key.name,
 			   summary = iface.summary,
 			   description = iface.description)
